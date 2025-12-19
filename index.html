@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Ranking Foco 21D</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #6a5acd, #8a2be2);
+  color: #fff;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  text-align: center;
+  opacity: .9;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: #fff;
+  color: #333;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.15);
+  animation: fadeUp .5s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.top {
+  font-size: 22px;
+}
+
+.progress {
+  background: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.bar {
+  height: 12px;
+  background: linear-gradient(90deg, #6a5acd, #8a2be2);
+  width: 0;
+  transition: width 1s ease;
+}
+
+.level {
+  font-size: 14px;
+  margin-top: 6px;
+  opacity: .8;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h1>🏆 Ranking Foco 21D</h1>
+  <div class="subtitle">Acompanhe sua evolução em tempo real</div>
+
+  <div id="ranking"></div>
+
+  <div class="card">
+    <h3>🎮 Como pontuar</h3>
+    <p>Check-in diário, plano alimentar, desafios semanais e bônus especiais.</p>
+    <p>Suba de nível e dispute os prêmios!</p>
+  </div>
+</div>
+
+<script>
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTF96EMeSLmNVOcCXBDZMmCT3URHU_goq6aBtNDOEL6UV783G9IdnwDKOMknzn7XLlc0hZk6Ss0tQiC/pub?gid=858165452&single=true&output=csv";
+const MAX_POINTS = 300;
+
+fetch(SHEET_URL)
+  .then(res => res.text())
+  .then(text => {
+    const rows = text.split("\n").slice(1);
+    const ranking = document.getElementById("ranking");
+
+    rows.forEach((row, index) => {
+      const cols = row.split(",");
+      if (!cols[0]) return;
+
+      const nome = cols[0];
+      const pontos = parseInt(cols[1]) || 0;
+      const progresso = Math.min((pontos / MAX_POINTS) * 100, 100);
+
+      let medalha = "";
+      if (index === 0) medalha = "🥇";
+      else if (index === 1) medalha = "🥈";
+      else if (index === 2) medalha = "🥉";
+
+      let nivel = "🌱 Iniciante";
+      if (pontos >= 100) nivel = "💪 Determinada";
+      if (pontos >= 200) nivel = "👑 Campeã";
+      if (pontos >= 300) nivel = "⭐ Lendária";
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="top">${medalha} <strong>${nome}</strong> — ${pontos} pts</div>
+        <div class="progress"><div class="bar" style="width:${progresso}%"></div></div>
+        <div class="level">${nivel}</div>
+      `;
+      ranking.appendChild(card);
+    });
+  });
+</script>
+</body>
+</html>

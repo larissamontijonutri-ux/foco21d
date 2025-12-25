@@ -115,12 +115,16 @@ const MAX_POINTS = 300;
 fetch(SHEET_URL)
   .then(res => res.text())
   .then(text => {
-    const rows = text.split("\n").slice(1);
+   const rows = text
+  .trim()
+  .split(/\r?\n/)
+  .slice(1);
+
     const ranking = document.getElementById("ranking");
 
     rows.forEach((row, index) => {
       const cols = row.split(";");
-      if (!cols[1]) return;
+      if (!cols[1] || cols[1].trim() === "") return;
 
       const pos          = cols[0];
       const nome         = cols[1];
@@ -177,3 +181,4 @@ fetch(SHEET_URL)
 </script>
 </body>
 </html>
+

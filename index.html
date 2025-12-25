@@ -115,24 +115,28 @@ const MAX_POINTS = 300;
 fetch(SHEET_URL)
   .then(res => res.text())
   .then(text => {
-   const rows = text
-  .trim()
-  .split(/\r?\n/)
-  .slice(1);
 
+    const lines = text.trim().split(/\r?\n/);
+    const header = lines[0];
+
+    // Detecta automaticamente o separador
+    const separator = header.includes(";") ? ";" : ",";
+
+    const rows = lines.slice(1);
     const ranking = document.getElementById("ranking");
 
+    ranking.innerHTML = "";
+
     rows.forEach((row, index) => {
-      const cols = row.split(";");
+      const cols = row.split(separator);
       if (!cols[1] || cols[1].trim() === "") return;
 
-      const pos          = cols[0];
-      const nome         = cols[1];
-      const pontos       = parseInt(cols[2]) || 0;
-      const nivelSheet   = cols[3];
-      const pesoInicial  = cols[4];
-      const pesoAtual    = cols[5];
-      const perda        = cols[6];
+      const nome        = cols[1];
+      const pontos      = parseInt(cols[2]) || 0;
+      const nivelSheet  = cols[3];
+      const pesoInicial = cols[4];
+      const pesoAtual   = cols[5];
+      const perda       = cols[6];
 
       const progresso = Math.min((pontos / MAX_POINTS) * 100, 100);
 
@@ -181,4 +185,5 @@ fetch(SHEET_URL)
 </script>
 </body>
 </html>
+
 

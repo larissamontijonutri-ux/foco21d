@@ -118,27 +118,36 @@ fetch(SHEET_URL)
 
     const lines = text.trim().split(/\r?\n/);
     const header = lines[0];
-
-    // Detecta automaticamente o separador
     const separator = header.includes(";") ? ";" : ",";
 
     const rows = lines.slice(1);
     const ranking = document.getElementById("ranking");
-
     ranking.innerHTML = "";
 
-    rows.forEach((row, index) => {
-      const cols = row.split(separator);
-      if (!cols[1] || cols[1].trim() === "") return;
+    // 🔥 1. Transformar linhas em objetos
+    const participantes = rows
+      .map(row => {
+        const cols = row.split(separator);
+        if (!cols[1] || cols[1].trim() === "") return null;
 
-      const nome        = cols[1];
-      const pontos      = parseInt(cols[2]) || 0;
-      const nivelSheet  = cols[3];
-      const pesoInicial = cols[4];
-      const pesoAtual   = cols[5];
-      const perda       = cols[6];
+        return {
+          nome: cols[1],
+          pontos: parseInt(cols[2]) || 0,
+          nivelSheet: cols[3],
+          pesoInicial: cols[4],
+          pesoAtual: cols[5],
+          perda: cols[6]
+        };
+      })
+      .filter(p => p !== null);
 
-      const progresso = Math.min((pontos / MAX_POINTS) * 100, 100);
+    // 🏆 2. Ordenar por pontuação (maior → menor)
+    participantes.sort((a, b) => b.pontos - a.pontos);
+
+    // 🎨 3. Renderizar já ordenado
+    participantes.forEach((p, index) => {
+
+      const progresso = Math.min((p.pontos / MAX_POINTS) * 100, 100);
 
       let medalha = "";
       if (index === 0) medalha = "🥇";
@@ -146,13 +155,13 @@ fetch(SHEET_URL)
       else if (index === 2) medalha = "🥉";
 
       let nivel = "🌱 Iniciante";
-      if (nivelSheet && nivelSheet.trim() !== "") {
-        nivel = nivelSheet;
-      } else if (pontos >= 300) {
+      if (p.nivelSheet && p.nivelSheet.trim() !== "") {
+        nivel = p.nivelSheet;
+      } else if (p.pontos >= 300) {
         nivel = "⭐ Lendária";
-      } else if (pontos >= 200) {
+      } else if (p.pontos >= 200) {
         nivel = "👑 Campeã";
-      } else if (pontos >= 100) {
+      } else if (p.pontos >= 100) {
         nivel = "💪 Determinada";
       }
 
@@ -161,8 +170,8 @@ fetch(SHEET_URL)
       card.innerHTML = `
         <div class="top">
           <span>${medalha}</span>
-          <strong>${nome}</strong>
-          <span class="pts">${pontos} pts</span>
+          <strong>${p.nome}</strong>
+          <span class="pts">${p.pontos} pts</span>
         </div>
 
         <div class="progress">
@@ -171,10 +180,10 @@ fetch(SHEET_URL)
 
         <div class="level">${nivel}</div>
 
-        ${pesoAtual ? `
+        ${p.pesoAtual ? `
           <div class="extra">
-            ⚖️ ${pesoInicial}kg → ${pesoAtual}kg 
-            <span class="loss">(-${perda}kg)</span>
+            ⚖️ ${p.pesoInicial}kg → ${p.pesoAtual}kg 
+            <span class="loss">(-${p.perda}kg)</span>
           </div>
         ` : ""}
       `;
@@ -185,5 +194,6 @@ fetch(SHEET_URL)
 </script>
 </body>
 </html>
+
 
 

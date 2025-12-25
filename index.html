@@ -96,7 +96,7 @@ fetch(SHEET_URL)
     const ranking = document.getElementById("ranking");
 
     rows.forEach((row, index) => {
-      const cols = row.split(",");
+      const cols = row.split(";");
       if (!cols[0]) return;
 
       const nome = cols[0];
@@ -126,3 +126,4 @@ fetch(SHEET_URL)
 </script>
 </body>
 </html>
+

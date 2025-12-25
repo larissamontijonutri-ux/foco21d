@@ -147,18 +147,31 @@ fetch(sheetUrl)
     const c = l.split(",");
     if (!c[1]) return;
 
+    const pontos = Number(
+      String(c[2] || "0").replace(",", ".").trim()
+    ) || 0;
+
+    let nivel = "🌱 Iniciante";
+    if (pontos >= 50)  nivel = "🔥 Engajada";
+    if (pontos >= 100) nivel = "💪 Determinada";
+    if (pontos >= 200) nivel = "👑 Campeã";
+    if (pontos >= 300) nivel = "⭐ Lendária";
+
     dados.push({
       nome: c[1],
-      pontos: Number(c[2]),
-      pesoI: c[4],
-      pesoA: c[5],
-      perda: c[6]
+      pontos: pontos,
+      nivel: nivel,
+      pesoI: c[4] || "-",
+      pesoA: c[5] || "-",
+      perda: c[6] || "-"
     });
   });
 
   dados.sort((a,b) => b.pontos - a.pontos);
-  const max = Math.max(...dados.map(d => d.pontos));
+  const max = Math.max(...dados.map(d => d.pontos), 1);
   const ranking = document.getElementById("ranking");
+
+  ranking.innerHTML = "";
 
   dados.forEach((p,i) => {
     const perc = (p.pontos / max) * 100;
@@ -174,6 +187,7 @@ fetch(sheetUrl)
           <span style="width:${perc}%"></span>
         </div>
 
+        <small><strong>Nível:</strong> ${p.nivel}</small><br>
         <small>⚖️ ${p.pesoI}kg → ${p.pesoA}kg (-${p.perda}kg)</small>
       </div>
     `;
@@ -181,5 +195,7 @@ fetch(sheetUrl)
 });
 </script>
 
+
 </body>
 </html>
+

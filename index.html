@@ -96,34 +96,37 @@ fetch(SHEET_URL)
     const ranking = document.getElementById("ranking");
 
     rows.forEach((row, index) => {
-      const cols = row.split(";");
-      if (!cols[0]) return;
+  const cols = row.split(";");
+  if (!cols[1]) return;
 
-      const nome = cols[0];
-      const pontos = parseInt(cols[1]) || 0;
-      const progresso = Math.min((pontos / MAX_POINTS) * 100, 100);
+  const nome = cols[1];
+  const pontos = parseInt(cols[2]) || 0;
 
-      let medalha = "";
-      if (index === 0) medalha = "🥇";
-      else if (index === 1) medalha = "🥈";
-      else if (index === 2) medalha = "🥉";
+  const progresso = Math.min((pontos / MAX_POINTS) * 100, 100);
 
-      let nivel = "🌱 Iniciante";
-      if (pontos >= 100) nivel = "💪 Determinada";
-      if (pontos >= 200) nivel = "👑 Campeã";
-      if (pontos >= 300) nivel = "⭐ Lendária";
+  let medalha = "";
+  if (index === 0) medalha = "🥇";
+  else if (index === 1) medalha = "🥈";
+  else if (index === 2) medalha = "🥉";
 
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <div class="top">${medalha} <strong>${nome}</strong> — ${pontos} pts</div>
-        <div class="progress"><div class="bar" style="width:${progresso}%"></div></div>
-        <div class="level">${nivel}</div>
-      `;
-      ranking.appendChild(card);
-    });
+  let nivel = "🌱 Iniciante";
+  if (pontos >= 100) nivel = "💪 Determinada";
+  if (pontos >= 200) nivel = "👑 Campeã";
+  if (pontos >= 300) nivel = "⭐ Lendária";
+
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <div class="top">${medalha} <strong>${nome}</strong> — ${pontos} pts</div>
+    <div class="progress"><div class="bar" style="width:${progresso}%"></div></div>
+    <div class="level">${nivel}</div>
+  `;
+  ranking.appendChild(card);
+});
+
   });
 </script>
 </body>
 </html>
+
 

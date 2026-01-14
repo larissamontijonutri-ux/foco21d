@@ -101,7 +101,6 @@ h1 {
 <h1>🏆 Ranking Foco 21D</h1>
 <div class="subtitle">Acompanhe sua evolução em tempo real</div>
 
-<!-- TOPO EM 2 COLUNAS -->
 <div class="top-grid">
 
   <div class="card">
@@ -118,8 +117,6 @@ h1 {
   <div class="card checkin">
     <h2>✅ Check-in Diário</h2>
     <p>Preencha todos os dias para somar pontos no ranking.</p>
-
-    <!-- 🔴 COLE AQUI O LINK DO FORM -->
     <a href="https://forms.gle/fZpMjWwN2PJiDNhm7" target="_blank">
       Fazer Check-in Agora
     </a>
@@ -127,7 +124,6 @@ h1 {
 
 </div>
 
-<!-- RANKING -->
 <div id="ranking"></div>
 
 </div>
@@ -136,16 +132,10 @@ h1 {
 const sheetUrl =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vTF96EMeSLmNVOcCXBDZMmCT3URHU_goq6aBtNDOEL6UV783G9IdnwDKOMknzn7XLlc0hZk6Ss0tQiC/pub?gid=858165452&single=true&output=csv";
 
-  <script>
 function num(v) {
   if (!v) return 0;
-  return Number(
-    v.toString()
-     .replace('"', '')
-     .replace(',', '.')
-  ) || 0;
+  return Number(v.toString().replace(',', '.').replace('"','')) || 0;
 }
-</script>
 
 fetch(sheetUrl)
 .then(res => res.text())
@@ -158,71 +148,19 @@ fetch(sheetUrl)
     const c = l.split(",");
     if (!c[1]) return;
 
-    const pontos = Number(
-      String(c[2] || "0").replace(",", ".").trim()
-    ) || 0;
+    const pontos = num(c[2]);
 
     let nivel = "🌱 Iniciante";
-    if (pontos >= 150)  nivel = "🔥 Engajada";
+    if (pontos >= 150) nivel = "🔥 Engajada";
     if (pontos >= 250) nivel = "💪 Determinada";
     if (pontos >= 400) nivel = "👑 Campeã";
     if (pontos >= 600) nivel = "⭐ Lendária";
-
-    const pesoInicial = num(c[4]);
-const pesoAtual   = num(c[5]);
-const perdaReal   = pesoInicial - pesoAtual;
-
-dados.push({
-  nome: c[1],
-  pontos: num(c[2]),
-  pesoI: pesoInicial,
-  pesoA: pesoAtual,
-  perda: perdaReal
-});
-
-
-  dados.sort((a,b) => b.pontos - a.pontos);
-  const max = Math.max(...dados.map(d => d.pontos), 1);
-  const ranking = document.getElementById("ranking");
-
-  ranking.innerHTML = "";
-
-  <script>
-function num(v) {
-  if (!v) return 0;
-  return Number(v.toString().replace(',', '.')) || 0;
-}
-
-fetch(sheetUrl)
-.then(res => res.text())
-.then(text => {
-
-  const linhas = text.split("\n").slice(1);
-  const dados = [];
-
-  linhas.forEach(l => {
-    const c = l.split(";");
-    if (!c[1]) return;
-
-    const pontos = num(c[2]);
-    let nivel = "🌱 Iniciante";
-    if (pontos >= 50)  nivel = "🔥 Engajada";
-    if (pontos >= 100) nivel = "💪 Determinada";
-    if (pontos >= 200) nivel = "🏆 Campeã";
-    if (pontos >= 300) nivel = "⭐ Lendária";
 
     const pesoI = num(c[4]);
     const pesoA = num(c[5]);
     const perda = pesoI - pesoA;
 
-    dados.push({
-      nome: c[1],
-      pontos,
-      nivel,
-      pesoI,
-      pesoA,
-      perda
-    });
+    dados.push({ nome: c[1], pontos, nivel, pesoI, pesoA, perda });
   });
 
   dados.sort((a,b) => b.pontos - a.pontos);
@@ -256,10 +194,5 @@ fetch(sheetUrl)
 });
 </script>
 
-
-
 </body>
 </html>
-
-
-

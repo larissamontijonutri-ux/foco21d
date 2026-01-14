@@ -163,10 +163,10 @@ fetch(sheetUrl)
     ) || 0;
 
     let nivel = "🌱 Iniciante";
-    if (pontos >= 50)  nivel = "🔥 Engajada";
-    if (pontos >= 100) nivel = "💪 Determinada";
-    if (pontos >= 200) nivel = "👑 Campeã";
-    if (pontos >= 300) nivel = "⭐ Lendária";
+    if (pontos >= 150)  nivel = "🔥 Engajada";
+    if (pontos >= 250) nivel = "💪 Determinada";
+    if (pontos >= 400) nivel = "👑 Campeã";
+    if (pontos >= 600) nivel = "⭐ Lendária";
 
     const pesoInicial = num(c[4]);
 const pesoAtual   = num(c[5]);
@@ -187,6 +187,50 @@ dados.push({
 
   ranking.innerHTML = "";
 
+  <script>
+function num(v) {
+  if (!v) return 0;
+  return Number(v.toString().replace(',', '.')) || 0;
+}
+
+fetch(sheetUrl)
+.then(res => res.text())
+.then(text => {
+
+  const linhas = text.split("\n").slice(1);
+  const dados = [];
+
+  linhas.forEach(l => {
+    const c = l.split(";");
+    if (!c[1]) return;
+
+    const pontos = num(c[2]);
+    let nivel = "🌱 Iniciante";
+    if (pontos >= 50)  nivel = "🔥 Engajada";
+    if (pontos >= 100) nivel = "💪 Determinada";
+    if (pontos >= 200) nivel = "🏆 Campeã";
+    if (pontos >= 300) nivel = "⭐ Lendária";
+
+    const pesoI = num(c[4]);
+    const pesoA = num(c[5]);
+    const perda = pesoI - pesoA;
+
+    dados.push({
+      nome: c[1],
+      pontos,
+      nivel,
+      pesoI,
+      pesoA,
+      perda
+    });
+  });
+
+  dados.sort((a,b) => b.pontos - a.pontos);
+  const max = Math.max(...dados.map(d => d.pontos), 1);
+
+  const ranking = document.getElementById("ranking");
+  ranking.innerHTML = "";
+
   dados.forEach((p,i) => {
     const perc = (p.pontos / max) * 100;
 
@@ -201,12 +245,11 @@ dados.push({
           <span style="width:${perc}%"></span>
         </div>
 
-        <small><strong>Nível:</strong> ${p.nivel}</small><br>
-       <small>
-⚖️ ${p.pesoI.toFixed(2)}kg → ${p.pesoA.toFixed(2)}kg 
-(${p.perda > 0 ? '-' : ''}${p.perda.toFixed(1)}kg)
-</small>
-
+        <small>
+          Nível: ${p.nivel}<br>
+          ⚖️ ${p.pesoI.toFixed(2)}kg → ${p.pesoA.toFixed(2)}kg
+          (${p.perda > 0 ? "-" : ""}${p.perda.toFixed(1)}kg)
+        </small>
       </div>
     `;
   });
@@ -214,7 +257,9 @@ dados.push({
 </script>
 
 
+
 </body>
 </html>
+
 
 

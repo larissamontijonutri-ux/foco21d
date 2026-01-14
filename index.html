@@ -136,6 +136,17 @@ h1 {
 const sheetUrl =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vTF96EMeSLmNVOcCXBDZMmCT3URHU_goq6aBtNDOEL6UV783G9IdnwDKOMknzn7XLlc0hZk6Ss0tQiC/pub?gid=858165452&single=true&output=csv";
 
+  <script>
+function num(v) {
+  if (!v) return 0;
+  return Number(
+    v.toString()
+     .replace('"', '')
+     .replace(',', '.')
+  ) || 0;
+}
+</script>
+
 fetch(sheetUrl)
 .then(res => res.text())
 .then(text => {
@@ -157,15 +168,18 @@ fetch(sheetUrl)
     if (pontos >= 200) nivel = "👑 Campeã";
     if (pontos >= 300) nivel = "⭐ Lendária";
 
-    dados.push({
-      nome: c[1],
-      pontos: pontos,
-      nivel: nivel,
-      pesoI: c[4] || "-",
-      pesoA: c[5] || "-",
-      perda: c[6] || "-"
-    });
-  });
+    const pesoInicial = num(c[4]);
+const pesoAtual   = num(c[5]);
+const perdaReal   = pesoInicial - pesoAtual;
+
+dados.push({
+  nome: c[1],
+  pontos: num(c[2]),
+  pesoI: pesoInicial,
+  pesoA: pesoAtual,
+  perda: perdaReal
+});
+
 
   dados.sort((a,b) => b.pontos - a.pontos);
   const max = Math.max(...dados.map(d => d.pontos), 1);
@@ -188,7 +202,11 @@ fetch(sheetUrl)
         </div>
 
         <small><strong>Nível:</strong> ${p.nivel}</small><br>
-        <small>⚖️ ${p.pesoI}kg → ${p.pesoA}kg (-${p.perda}kg)</small>
+       <small>
+⚖️ ${p.pesoI.toFixed(2)}kg → ${p.pesoA.toFixed(2)}kg 
+(${p.perda > 0 ? '-' : ''}${p.perda.toFixed(1)}kg)
+</small>
+
       </div>
     `;
   });
@@ -198,4 +216,5 @@ fetch(sheetUrl)
 
 </body>
 </html>
+
 

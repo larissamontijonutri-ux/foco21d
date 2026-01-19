@@ -92,6 +92,42 @@ h1 {
   height: 100%;
   background: linear-gradient(90deg, #6a5acd, #8a2be2);
 }
+
+/* RESULTADOS */
+.result {
+  font-weight: bold;
+  margin-top: 5px;
+  animation: fadeIn 0.6s ease;
+}
+
+.result.win {
+  color: #2e7d32;
+}
+
+.result.loss {
+  color: #c62828;
+}
+
+.result.neutral {
+  color: #666;
+}
+
+.emoji {
+  display: inline-block;
+  animation: pulse 1.2s infinite;
+}
+
+/* ANIMAÇÕES */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 </style>
 </head>
 
@@ -102,7 +138,6 @@ h1 {
 <div class="subtitle">Acompanhe sua evolução em tempo real</div>
 
 <div class="top-grid">
-
   <div class="card">
     <h2>🎯 Como Pontuar</h2>
     <ul>
@@ -121,7 +156,6 @@ h1 {
       Fazer Check-in Agora
     </a>
   </div>
-
 </div>
 
 <div id="ranking"></div>
@@ -134,7 +168,7 @@ const sheetUrl =
 
 function num(v) {
   if (!v) return 0;
-  return Number(v.toString().replace(',', '.').replace('"','')) || 0;
+  return Number(v.toString().replace('"','').replace(',', '.')) || 0;
 }
 
 fetch(sheetUrl)
@@ -158,9 +192,35 @@ fetch(sheetUrl)
 
     const pesoI = num(c[4]);
     const pesoA = num(c[5]);
-    const perda = pesoI - pesoA;
 
-    dados.push({ nome: c[1], pontos, nivel, pesoI, pesoA, perda });
+    // REGRA DEFINITIVA
+    const diff = pesoA - pesoI;
+
+    let resultClass = "neutral";
+    let emoji = "➖";
+    let texto = "0.0kg";
+
+    if (diff < 0) {
+      resultClass = "win";
+      emoji = "🎉";
+      texto = diff.toFixed(1) + "kg";
+    } else if (diff > 0) {
+      resultClass = "loss";
+      emoji = "😡";
+      texto = "+" + diff.toFixed(1) + "kg";
+    }
+
+    dados.push({
+      nome: c[1],
+      pontos,
+      nivel,
+      pesoI,
+      pesoA,
+      diff,
+      resultClass,
+      emoji,
+      texto
+    });
   });
 
   dados.sort((a,b) => b.pontos - a.pontos);
@@ -186,7 +246,9 @@ fetch(sheetUrl)
         <small>
           Nível: ${p.nivel}<br>
           ⚖️ ${p.pesoI.toFixed(2)}kg → ${p.pesoA.toFixed(2)}kg
-          (${p.perda > 0 ? "-" : ""}${p.perda.toFixed(1)}kg)
+          <div class="result ${p.resultClass}">
+            <span class="emoji">${p.emoji}</span> ${p.texto}
+          </div>
         </small>
       </div>
     `;
